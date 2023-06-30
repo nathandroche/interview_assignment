@@ -19,6 +19,17 @@ variable bucket_name {
     type = string
     default = "pipeline-bucket23.3451dw"
 }
+
+variable pipeline_input {
+    type = string
+    default = "data-upload.json"
+}
+
+variable pipeline_output {
+    type = string
+    default = "data-output.json"
+}
+
 variable data_path {
     type = string
     default = "resources/source_data.json"

@@ -1,8 +1,18 @@
+
+
+import sys
+import s3fs
 import pandas as pd
+from awsglue.utils import getResolvedOptions
+
 
 METERS_TO_FEET = 3.28084
 
-df = pd.read_json("source_data.json")
+args = getResolvedOptions(sys.argv, ["BUCKET_NAME","input_file", "output_file", "key", "secret_key"])
+s3 = s3fs.S3FileSystem(anon=False, key=args["key"], secret=args["secret_key"])
+
+with s3.open(f'{args["BUCKET_NAME"]}/{args["input_file"]}', mode="r") as f:
+    df = pd.read_json(f)
 
 
 def transform(pokedex_entry_list):
@@ -17,6 +27,7 @@ def transform(pokedex_entry_list):
 
 df.apply(transform, axis=1)
 
-df.to_json("output_data.json")
+with s3.open(f'{args["BUCKET_NAME"]}/{args["output_file"]}', mode="w") as f:
+    df.to_json(f)
 
 
