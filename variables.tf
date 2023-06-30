@@ -1,11 +1,9 @@
 variable aws_access {
     type      = string
-    default   = "AKIAU5C4MWT4VYDTNA3F"
     sensitive = true
 }
 variable aws_secret {
     type      = string
-    default   = "dJXQcP/eABKbcYWNv0ttQqrYUd6CZ3OgYVN3EOC0"
     sensitive = true
 }
 
