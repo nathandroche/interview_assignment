@@ -15,6 +15,7 @@ provider "aws" {
   secret_key = var.aws_secret
 }
 
+#bucket creation
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
@@ -31,14 +32,13 @@ module "s3_bucket" {
 #source: https://registry.terraform.io/modules/terraform-aws-modules/s3-bucket/aws/latest
 
 
+#bucket objects
 resource "aws_s3_object" "data_object" {
   bucket       = var.bucket_name
   key          = var.pipeline_input
   source       = var.data_path
-  content      = data.http.source_data.request_body
-  content_type = "application/json"
 
-  depends_on = [module.s3_bucket]#, data.http.source_data]
+  depends_on = [module.s3_bucket]
   etag = filemd5(var.data_path)
 }
 
@@ -60,6 +60,7 @@ resource "aws_s3_object" "script_object" {
   etag         = filemd5(var.script_path)
 }
 
+#glue job
 resource "aws_glue_job" "transform_job" {
   name         = "transform_job"
   role_arn     = aws_iam_role.glue_role.arn
@@ -115,23 +116,23 @@ resource "aws_iam_role" "glue_role" {
 } #source: https://stackoverflow.com/questions/76184964/how-to-create-an-iam-role-for-aws-glue-using-terraform
 
 #data extraction
-data "http" "source_data" {
-  url = var.data_location
+# data "http" "source_data" {
+#   url = var.data_location
 
-  # Optional request headers
-  request_headers = {
-    Accept = "application/json"
-  }
-}
+#   # Optional request headers
+#   request_headers = {
+#     Accept = "application/json"
+#   }
+# }
 
-resource "random_uuid" "condition_check" {
-  lifecycle {
-    precondition {
-      condition     = contains([200], data.http.source_data.status_code)
-      error_message = "Status code invalid"
-    }
-  }
-}
+# resource "random_uuid" "condition_check" {
+#   lifecycle {
+#     precondition {
+#       condition     = contains([200], data.http.source_data.status_code)
+#       error_message = "Status code invalid"
+#     }
+#   }
+# }
 #source: https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http
 
 
