@@ -32,10 +32,10 @@ module "s3_bucket" {
 
 
 resource "aws_s3_object" "data_object" {
-  bucket = var.bucket_name
-  key    = var.pipeline_input
-  source = var.data_path
-  content = data.http.source_data.request_body
+  bucket       = var.bucket_name
+  key          = var.pipeline_input
+  source       = var.data_path
+  content      = data.http.source_data.request_body
   content_type = "application/json"
 
   depends_on = [module.s3_bucket]#, data.http.source_data]
@@ -71,8 +71,8 @@ resource "aws_glue_job" "transform_job" {
   }
   default_arguments = {
    "--BUCKET_NAME" = var.bucket_name,
-   "--input_file"   = var.pipeline_input,
-   "--output_file"   = var.pipeline_output,
+   "--input_file"  = var.pipeline_input,
+   "--output_file" = var.pipeline_output,
    "--key"         = var.aws_access,
    "--secret_key"  = var.aws_secret,
   }
@@ -85,10 +85,10 @@ resource "aws_iam_role" "glue_role" {
   # Terraform's "jsonencode" function converts a
   # Terraform expression result to valid JSON syntax.
   assume_role_policy = jsonencode({
-    "Version" : "2012-10-17",
+    "Version"   : "2012-10-17",
     "Statement" : [
       {
-        "Sid" : "VisualEditor0",
+        "Sid"    : "VisualEditor0",
         "Effect" : "Allow",
         "Action" : "sts:AssumeRole",
         Principal = {
@@ -104,9 +104,9 @@ resource "aws_iam_role" "glue_role" {
       "Version" : "2012-10-17",
       "Statement" : [
         {
-          "Sid" : "VisualEditor0",
-          "Effect" : "Allow",
-          "Action" : "s3:*",
+          "Sid"      : "VisualEditor0",
+          "Effect"   : "Allow",
+          "Action"   : "s3:*",
           "Resource" : "*"
         }
       ]
